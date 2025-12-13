@@ -243,7 +243,7 @@ export const EnhancedAdminDashboard: React.FC = () => {
   };
 
   const handleCopyOrder = async (order: Order) => {
-    const orderDetails = `Order ID: ${order.id}\nCustomer: ${order.customer_name}\nEmail: ${order.email}\nPhone: ${order.phone}\nTotal: ${order.total} DA\nStatus: ${order.status}\nItems: ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}\nDelivery: ${order.delivery_method === 'stop_desk' ? 'Stop Desk' : 'Home Delivery'}\nAddress: ${order.address}`;
+    const orderDetails = `Order ID: ${order.id}\nCustomer: ${order.customer_name}\nEmail: ${order.email}\nPhone: ${order.phone}\nTotal: ${order.total} DA\nStatus: ${order.status}\nItems: ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}\nDelivery: ${order.delivery_method === 'stop_desk' ? 'Stop Desk' : 'Home Delivery'}\nAddress: ${order.shipping_address || 'N/A'}`;
     
     try {
       await navigator.clipboard.writeText(orderDetails);
@@ -1088,7 +1088,7 @@ export const EnhancedAdminDashboard: React.FC = () => {
                                 <p className="text-gray-400"><span className="text-white">الاسم:</span> {selectedOrder.customer_name}</p>
                                 <p className="text-gray-400"><span className="text-white">البريد:</span> {selectedOrder.email}</p>
                                 <p className="text-gray-400"><span className="text-white">الهاتف:</span> {selectedOrder.phone}</p>
-                                <p className="text-gray-400"><span className="text-white">العنوان:</span> {selectedOrder.address}</p>
+                                <p className="text-gray-400"><span className="text-white">العنوان:</span> {selectedOrder.shipping_address || 'N/A'}</p>
                             </div>
                         </div>
                         
