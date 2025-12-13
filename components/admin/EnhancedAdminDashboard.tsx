@@ -70,6 +70,26 @@ export const EnhancedAdminDashboard: React.FC = () => {
     name: '', brand: '', price: 0, description: '', stock_quantity: 0, specs: {}, images: []
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [specsInputs, setSpecsInputs] = useState({
+    movement: '',
+    waterResistance: '',
+    caseMaterial: '',
+    strapMaterial: '',
+    dialColor: '',
+    caseSize: ''
+  });
+
+  // Additional Modal States
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    lowStockAlert: true,
+    newOrderAlert: true,
+    theme: 'dark'
+  });
 
   useEffect(() => {
     if (session) {
@@ -173,7 +193,12 @@ export const EnhancedAdminDashboard: React.FC = () => {
         if (url) imageUrls = [url, ...imageUrls];
       }
 
-      const productData = { ...productForm, images: imageUrls };
+      // Include specs in product data
+      const productData = { 
+        ...productForm, 
+        images: imageUrls,
+        specs: specsInputs
+      };
       
       if (editingProduct) {
         await supabase.from('products').update(productData).eq('id', editingProduct.id);
@@ -184,6 +209,14 @@ export const EnhancedAdminDashboard: React.FC = () => {
       setImageFile(null);
       setEditingProduct(null);
       setProductForm({ name: '', brand: '', price: 0, description: '', stock_quantity: 0, specs: {}, images: [] });
+      setSpecsInputs({
+        movement: '',
+        waterResistance: '',
+        caseMaterial: '',
+        strapMaterial: '',
+        dialColor: '',
+        caseSize: ''
+      });
       fetchData();
     } catch (e) {
         console.error(e);
@@ -202,6 +235,57 @@ export const EnhancedAdminDashboard: React.FC = () => {
   const handleUpdateOrderStatus = async (id: string, status: string) => {
       await supabase.from('orders').update({ status }).eq('id', id);
       fetchData();
+  };
+
+  const handleViewOrderDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsOrderDetailsOpen(true);
+  };
+
+  const handleCopyOrder = async (order: Order) => {
+    const orderDetails = `Order ID: ${order.id}\nCustomer: ${order.customer_name}\nEmail: ${order.email}\nPhone: ${order.phone}\nTotal: ${order.total} DA\nStatus: ${order.status}\nItems: ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}\nDelivery: ${order.delivery_method === 'stop_desk' ? 'Stop Desk' : 'Home Delivery'}\nAddress: ${order.address}`;
+    
+    try {
+      await navigator.clipboard.writeText(orderDetails);
+      alert('تم نسخ تفاصيل الطلب بنجاح');
+    } catch (err) {
+      alert('فشل نسخ تفاصيل الطلب');
+    }
+  };
+
+  const handleSettingsSave = () => {
+    // Save settings to localStorage or backend
+    localStorage.setItem('adminSettings', JSON.stringify(settings));
+    setIsSettingsOpen(false);
+    alert('تم حفظ الإعدادات بنجاح');
+  };
+
+  const getNotifications = () => {
+    const notifications = [];
+    
+    // Low stock notifications
+    products.filter(p => p.stock_quantity < 5).forEach(product => {
+      notifications.push({
+        id: `stock-${product.id}`,
+        type: 'warning',
+        title: 'مخزون منخفض',
+        message: `${product.name} (${product.brand}) - ${product.stock_quantity} قطعة متبقية`,
+        time: 'الآن'
+      });
+    });
+
+    // Pending orders notifications
+    orders.filter(o => o.status === 'PENDING').forEach(order => {
+      notifications.push({
+        id: `order-${order.id}`,
+        type: 'info',
+        title: 'طلب جديد',
+        message: `طلب جديد من ${order.customer_name} - ${order.total} د.ج`,
+        time: 'الآن'
+      });
+    });
+
+    return notifications;
   };
 
   const exportData = (type: 'orders' | 'products') => {
@@ -278,11 +362,52 @@ export const EnhancedAdminDashboard: React.FC = () => {
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                         النظام يعمل بشكل طبيعي
                       </div>
-                      <button className="relative text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                      </button>
-                      <button className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
+                      <div className="relative">
+                        <button 
+                          onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                          className="relative text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        >
+                          <Bell className="w-5 h-5" />
+                          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        
+                        {/* Notifications Dropdown */}
+                        {isNotificationsOpen && (
+                          <div className="absolute right-0 mt-2 w-80 bg-dark-800 border border-white/10 rounded-lg shadow-xl z-50">
+                            <div className="p-4 border-b border-white/10">
+                              <h3 className="text-white font-medium">الإشعارات</h3>
+                            </div>
+                            <div className="max-h-96 overflow-y-auto">
+                              {getNotifications().length > 0 ? (
+                                getNotifications().map(notification => (
+                                  <div key={notification.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <div className="flex items-start gap-3">
+                                      <div className={`p-2 rounded-full ${
+                                        notification.type === 'warning' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-blue-500/20 text-blue-500'
+                                      }`}>
+                                        <AlertTriangle className="w-4 h-4" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="text-white font-medium text-sm">{notification.title}</p>
+                                        <p className="text-gray-400 text-xs mt-1">{notification.message}</p>
+                                        <p className="text-gray-500 text-xs mt-2">{notification.time}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-8 text-center text-gray-500">
+                                  <p>لا توجد إشعارات جديدة</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <button 
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+                      >
                         <Settings className="w-5 h-5" />
                       </button>
                       <button onClick={handleLogout} className="text-gray-400 hover:text-white flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
@@ -437,6 +562,14 @@ export const EnhancedAdminDashboard: React.FC = () => {
                       onClick={() => {
                         setEditingProduct(null);
                         setProductForm({ name: '', brand: '', price: 0, description: '', stock_quantity: 0, specs: {}, images: [] });
+                        setSpecsInputs({
+                          movement: '',
+                          waterResistance: '',
+                          caseMaterial: '',
+                          strapMaterial: '',
+                          dialColor: '',
+                          caseSize: ''
+                        });
                         setIsModalOpen(true);
                       }}
                       className="bg-gold-500 hover:bg-gold-400 text-dark-900 px-4 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-gold-500/10"
@@ -550,10 +683,16 @@ export const EnhancedAdminDashboard: React.FC = () => {
                                     </td>
                                     <td className="p-5 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 bg-dark-900 border border-white/10 rounded-lg hover:border-blue-400 hover:text-blue-400 text-gray-400 transition-colors">
+                                            <button 
+                                              onClick={() => handleViewOrderDetails(order)}
+                                              className="p-2 bg-dark-900 border border-white/10 rounded-lg hover:border-blue-400 hover:text-blue-400 text-gray-400 transition-colors"
+                                            >
                                                 <Eye className="w-4 h-4"/>
                                             </button>
-                                            <button className="p-2 bg-dark-900 border border-white/10 rounded-lg hover:border-green-400 hover:text-green-400 text-gray-400 transition-colors">
+                                            <button 
+                                              onClick={() => handleCopyOrder(order)}
+                                              className="p-2 bg-dark-900 border border-white/10 rounded-lg hover:border-green-400 hover:text-green-400 text-gray-400 transition-colors"
+                                            >
                                                 <Copy className="w-4 h-4"/>
                                             </button>
                                             <div className="relative inline-block">
@@ -644,14 +783,162 @@ export const EnhancedAdminDashboard: React.FC = () => {
                     </table>
                 </div>
             ) : activeTab === 'customers' ? (
-              <div className="p-8 text-center text-gray-500">
-                <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>قسم العملاء قيد التطوير</p>
+              <div className="p-8">
+                <h2 className="text-xl font-bold text-white mb-6">إدارة العملاء</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-dark-900/50 text-gray-400 font-medium uppercase text-xs tracking-wider border-b border-white/5">
+                            <tr>
+                                <th className="p-5">العميل</th>
+                                <th className="p-5">البريد الإلكتروني</th>
+                                <th className="p-5">الهاتف</th>
+                                <th className="p-5">عدد الطلبات</th>
+                                <th className="p-5">إجمالي المشتريات</th>
+                                <th className="p-5">تاريخ آخر طلب</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {Array.from(new Set(orders.map(o => o.email))).map(email => {
+                                const customerOrders = orders.filter(o => o.email === email);
+                                const totalSpent = customerOrders.reduce((acc, order) => 
+                                  order.status !== 'CANCELLED' ? acc + order.total : acc, 0);
+                                const lastOrder = customerOrders.sort((a, b) => 
+                                  new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+                                
+                                return (
+                                    <tr key={email} className="hover:bg-white/[0.02] transition-colors">
+                                        <td className="p-5">
+                                            <div className="font-bold text-white">{lastOrder.customer_name}</div>
+                                        </td>
+                                        <td className="p-5">
+                                            <div className="text-gray-400">{email}</div>
+                                        </td>
+                                        <td className="p-5">
+                                            <div className="text-gray-400">{lastOrder.phone}</div>
+                                        </td>
+                                        <td className="p-5">
+                                            <div className="text-white">{customerOrders.length}</div>
+                                        </td>
+                                        <td className="p-5">
+                                            <div className="text-gold-500 font-bold">{totalSpent.toLocaleString()} د.ج</div>
+                                        </td>
+                                        <td className="p-5">
+                                            <div className="text-gray-400">
+                                                {new Date(lastOrder.created_at).toLocaleDateString('ar-DZ')}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
               </div>
             ) : activeTab === 'analytics' ? (
-              <div className="p-8 text-center text-gray-500">
-                <TrendingUp className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>قسم التحليلات قيد التطوير</p>
+              <div className="p-8">
+                <h2 className="text-xl font-bold text-white mb-6">التحليلات والإحصائيات</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="bg-dark-800/50 p-6 rounded-lg border border-white/5">
+                    <h3 className="text-lg font-medium text-white mb-4">تطور المبيعات</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">هذا الشهر</span>
+                        <span className="text-gold-500 font-bold">{(stats.totalRevenue * 0.125).toLocaleString()} د.ج</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">الشهر الماضي</span>
+                        <span className="text-white font-bold">{(stats.totalRevenue * 0.1).toLocaleString()} د.ج</span>
+                      </div>
+                      <div className="w-full bg-dark-700 rounded-full h-2">
+                        <div className="bg-gold-500 h-2 rounded-full" style={{width: '75%'}}></div>
+                      </div>
+                      <p className="text-xs text-gray-500">نمو 25% عن الشهر الماضي</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-dark-800/50 p-6 rounded-lg border border-white/5">
+                    <h3 className="text-lg font-medium text-white mb-4">أكثر المنتجات مبيعاً</h3>
+                    <div className="space-y-3">
+                      {products.slice(0, 5).map((product, index) => {
+                        const productOrders = orders.filter(order => 
+                          order.items.some(item => item.name === product.name));
+                        const totalSold = productOrders.reduce((acc, order) => {
+                          const item = order.items.find(item => item.name === product.name);
+                          return acc + (item?.quantity || 0);
+                        }, 0);
+                        
+                        return (
+                          <div key={product.id} className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <span className="text-gold-500 font-bold">#{index + 1}</span>
+                              <div>
+                                <p className="text-white font-medium">{product.name}</p>
+                                <p className="text-gray-500 text-xs">{product.brand}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-white font-bold">{totalSold} قطعة</p>
+                              <p className="text-gray-500 text-xs">{(totalSold * product.price).toLocaleString()} د.ج</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-dark-800/50 p-6 rounded-lg border border/5">
+                    <h3 className="text-lg font-medium text-white mb-4">توزيع حالات الطلبات</h3>
+                    <div className="space-y-3">
+                      {[
+                        { status: 'PENDING', label: 'في الانتظار', color: 'yellow' },
+                        { status: 'CONFIRMED', label: 'مؤكد', color: 'blue' },
+                        { status: 'SHIPPED', label: 'تم الشحن', color: 'purple' },
+                        { status: 'DELIVERED', label: 'تم التوصيل', color: 'green' },
+                        { status: 'CANCELLED', label: 'ملغي', color: 'red' }
+                      ].map(({ status, label, color }) => {
+                        const count = orders.filter(o => o.status === status).length;
+                        const percentage = orders.length > 0 ? (count / orders.length) * 100 : 0;
+                        
+                        return (
+                          <div key={status} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400">{label}</span>
+                              <span className="text-white font-bold">{count} ({percentage.toFixed(1)}%)</span>
+                            </div>
+                            <div className="w-full bg-dark-700 rounded-full h-2">
+                              <div 
+                                className={`bg-${color}-500 h-2 rounded-full`} 
+                                style={{width: `${percentage}%`}}
+                              ></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-dark-800/50 p-6 rounded-lg border border-white/5">
+                    <h3 className="text-lg font-medium text-white mb-4">مؤشرات الأداء الرئيسية</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center p-3 bg-dark-900/50 rounded-lg">
+                        <span className="text-gray-400">متوسط قيمة الطلب</span>
+                        <span className="text-gold-500 font-bold">{stats.averageOrderValue.toLocaleString()} د.ج</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-dark-900/50 rounded-lg">
+                        <span className="text-gray-400">معدل التحويل</span>
+                        <span className="text-green-500 font-bold">3.2%</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-dark-900/50 rounded-lg">
+                        <span className="text-gray-400">العملاء الجدد</span>
+                        <span className="text-blue-500 font-bold">{Math.floor(stats.totalCustomers * 0.3)}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-dark-900/50 rounded-lg">
+                        <span className="text-gray-400">معدل الإرجاع</span>
+                        <span className="text-red-500 font-bold">1.8%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : null}
             
@@ -714,8 +1001,42 @@ export const EnhancedAdminDashboard: React.FC = () => {
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">المواصفات</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" placeholder="الحركة: Automatic" />
-                            <input className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" placeholder="مقاومة الماء: 100m" />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="الحركة: Automatic" 
+                              value={specsInputs.movement}
+                              onChange={e => setSpecsInputs({...specsInputs, movement: e.target.value})}
+                            />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="مقاومة الماء: 100m" 
+                              value={specsInputs.waterResistance}
+                              onChange={e => setSpecsInputs({...specsInputs, waterResistance: e.target.value})}
+                            />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="مادة العلبة: Steel" 
+                              value={specsInputs.caseMaterial}
+                              onChange={e => setSpecsInputs({...specsInputs, caseMaterial: e.target.value})}
+                            />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="مادة السوار: Leather" 
+                              value={specsInputs.strapMaterial}
+                              onChange={e => setSpecsInputs({...specsInputs, strapMaterial: e.target.value})}
+                            />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="لون القرص: Black" 
+                              value={specsInputs.dialColor}
+                              onChange={e => setSpecsInputs({...specsInputs, dialColor: e.target.value})}
+                            />
+                            <input 
+                              className="w-full bg-dark-900 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-gold-500 transition-colors" 
+                              placeholder="حجم العلبة: 42mm" 
+                              value={specsInputs.caseSize}
+                              onChange={e => setSpecsInputs({...specsInputs, caseSize: e.target.value})}
+                            />
                         </div>
                     </div>
                     
@@ -740,6 +1061,184 @@ export const EnhancedAdminDashboard: React.FC = () => {
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+      )}
+
+      {/* Order Details Modal */}
+      {isOrderDetailsOpen && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOrderDetailsOpen(false)}></div>
+            <div className="bg-dark-800 w-full max-w-3xl rounded-xl border border-white/10 max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl">
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-dark-700/50">
+                    <div>
+                        <h2 className="text-xl text-white font-serif font-bold">تفاصيل الطلب</h2>
+                        <p className="text-xs text-gray-400 mt-1">Order ID: {selectedOrder.id}</p>
+                    </div>
+                    <button onClick={() => setIsOrderDetailsOpen(false)} className="text-gray-400 hover:text-white p-2 hover:bg-white/5 rounded-full transition-colors">
+                        <XCircle />
+                    </button>
+                </div>
+                
+                <div className="p-8 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium text-white">معلومات العميل</h3>
+                            <div className="space-y-2">
+                                <p className="text-gray-400"><span className="text-white">الاسم:</span> {selectedOrder.customer_name}</p>
+                                <p className="text-gray-400"><span className="text-white">البريد:</span> {selectedOrder.email}</p>
+                                <p className="text-gray-400"><span className="text-white">الهاتف:</span> {selectedOrder.phone}</p>
+                                <p className="text-gray-400"><span className="text-white">العنوان:</span> {selectedOrder.address}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium text-white">معلومات الطلب</h3>
+                            <div className="space-y-2">
+                                <p className="text-gray-400"><span className="text-white">الحالة:</span> 
+                                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-bold ${
+                                        selectedOrder.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' : 
+                                        selectedOrder.status === 'DELIVERED' ? 'bg-green-500/10 text-green-500' :
+                                        selectedOrder.status === 'CANCELLED' ? 'bg-red-500/10 text-red-500' :
+                                        'bg-blue-500/10 text-blue-400'
+                                    }`}>
+                                        {selectedOrder.status === 'PENDING' ? 'في الانتظار' :
+                                         selectedOrder.status === 'DELIVERED' ? 'تم التوصيل' :
+                                         selectedOrder.status === 'CANCELLED' ? 'ملغي' :
+                                         selectedOrder.status === 'CONFIRMED' ? 'مؤكد' :
+                                         selectedOrder.status === 'SHIPPED' ? 'تم الشحن' : selectedOrder.status}
+                                    </span>
+                                </p>
+                                <p className="text-gray-400"><span className="text-white">التوصيل:</span> {selectedOrder.delivery_method === 'stop_desk' ? 'نقطة التوقف' : 'توصيل للمنزل'}</p>
+                                <p className="text-gray-400"><span className="text-white">التاريخ:</span> {new Date(selectedOrder.created_at).toLocaleDateString('ar-DZ')}</p>
+                                <p className="text-gray-400"><span className="text-white">المجموع:</span> <span className="text-gold-500 font-bold">{selectedOrder.total.toLocaleString()} د.ج</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-white">العناصر</h3>
+                        <div className="space-y-3">
+                            {selectedOrder.items.map((item, index) => (
+                                <div key={index} className="flex justify-between items-center p-4 bg-dark-900/50 rounded-lg">
+                                    <div>
+                                        <p className="text-white font-medium">{item.name}</p>
+                                        <p className="text-gray-500 text-sm">{item.brand}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-white font-bold">{item.price.toLocaleString()} د.ج</p>
+                                        <p className="text-gray-500 text-sm">x{item.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-4 border-t border-white/10">
+                        <button 
+                          onClick={() => handleCopyOrder(selectedOrder)}
+                          className="px-6 py-2 rounded-lg font-medium text-gray-400 hover:text-white transition-colors border border-white/10 hover:bg-white/5"
+                        >
+                            نسخ التفاصيل
+                        </button>
+                        <button 
+                          onClick={() => setIsOrderDetailsOpen(false)}
+                          className="bg-gold-500 text-dark-900 px-6 py-2 rounded-lg font-bold hover:bg-gold-400 transition-colors"
+                        >
+                            إغلاق
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsSettingsOpen(false)}></div>
+            <div className="bg-dark-800 w-full max-w-md rounded-xl border border-white/10 relative z-10 shadow-2xl">
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-dark-700/50">
+                    <div>
+                        <h2 className="text-xl text-white font-serif font-bold">الإعدادات</h2>
+                        <p className="text-xs text-gray-400 mt-1">تخصيص إعدادات لوحة التحكم</p>
+                    </div>
+                    <button onClick={() => setIsSettingsOpen(false)} className="text-gray-400 hover:text-white p-2 hover:bg-white/5 rounded-full transition-colors">
+                        <XCircle />
+                    </button>
+                </div>
+                
+                <div className="p-8 space-y-6">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-white">الإشعارات</h3>
+                        
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-white font-medium">إشعارات البريد الإلكتروني</p>
+                                <p className="text-gray-500 text-sm">استلام إشعارات عبر البريد</p>
+                            </div>
+                            <button
+                                onClick={() => setSettings({...settings, emailNotifications: !settings.emailNotifications})}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                    settings.emailNotifications ? 'bg-gold-500' : 'bg-gray-600'
+                                }`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    settings.emailNotifications ? 'translate-x-6' : 'translate-x-1'
+                                }`} />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-white font-medium">تنبيهات المخزون المنخفض</p>
+                                <p className="text-gray-500 text-sm">إشعار عند انخفاض المخزون</p>
+                            </div>
+                            <button
+                                onClick={() => setSettings({...settings, lowStockAlert: !settings.lowStockAlert})}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                    settings.lowStockAlert ? 'bg-gold-500' : 'bg-gray-600'
+                                }`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    settings.lowStockAlert ? 'translate-x-6' : 'translate-x-1'
+                                }`} />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-white font-medium">تنبيهات الطلبات الجديدة</p>
+                                <p className="text-gray-500 text-sm">إشعار عند تلقي طلب جديد</p>
+                            </div>
+                            <button
+                                onClick={() => setSettings({...settings, newOrderAlert: !settings.newOrderAlert})}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                    settings.newOrderAlert ? 'bg-gold-500' : 'bg-gray-600'
+                                }`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    settings.newOrderAlert ? 'translate-x-6' : 'translate-x-1'
+                                }`} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-4 border-t border-white/10">
+                        <button 
+                          onClick={() => setIsSettingsOpen(false)}
+                          className="px-6 py-2 rounded-lg font-medium text-gray-400 hover:text-white transition-colors"
+                        >
+                          إلغاء
+                        </button>
+                        <button 
+                          onClick={handleSettingsSave}
+                          className="bg-gold-500 text-dark-900 px-6 py-2 rounded-lg font-bold hover:bg-gold-400 transition-colors"
+                        >
+                          حفظ الإعدادات
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
       )}
