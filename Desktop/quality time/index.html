@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="description" content="Quality Time DZ - متجر ساعات فاخرة جزائري. ساعات بتصميم أصيل وجودة عالمية بأسعار اقتصادية. تشكيلة متنوعة من الساعات الرجالية والنسائية.">
+  <meta name="keywords" content="ساعات, ساعات فاخرة, ساعات جزائرية, ساعات رجالية, ساعات نسائية, هدايا, أناقة, luxury watches, quality time dz, watches algeria">
+  <meta name="author" content="Quality Time DZ">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="Arabic">
+  <meta name="geo.region" content="DZ">
+  <meta name="geo.placename" content="Algeria">
+  <meta name="theme-color" content="#050b18">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://qualitytime-dz.com">
+  <meta property="og:title" content="Quality Time DZ | ساعات فاخرة جزائرية">
+  <meta property="og:description" content="ساعات فاخرة بتصميم جزائري أصيل وجودة عالمية بأسعار اقتصادية. اكتشف مجموعتنا الفريدة من الساعات الرجالية والنسائية.">
+  <meta property="og:image" content="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ar_AR">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://qualitytime-dz.com">
+  <meta property="twitter:title" content="Quality Time DZ | ساعات فاخرة جزائرية">
+  <meta property="twitter:description" content="ساعات فاخرة بتصميم جزائري أصيل وجودة عالمية بأسعار اقتصادية.">
+  <meta property="twitter:image" content="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg">
+  
+  <title>Quality Time | ساعات فاخرة جزائرية</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png" />
+  <link rel="apple-touch-icon" href="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png" />
+  
+  <!-- Preconnect for critical origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://mayiosolklryjbxxfohi.supabase.co">
+  <link rel="preconnect" href="https://esm.sh">
+  
+  <!-- DNS prefetch for additional domains -->
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  
+  <!-- Preload critical fonts -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" as="style">
+  
+  <!-- Fonts with fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet" media="all">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Critical CSS -->
+  <style>
+    :root {
+      --navy-deep: #050b18;
+      --navy-soft: #0a1128;
+      --gold-polished: #c5a059;
+      --gold-light: #e2c58a;
+      --gold-dark: #8e6d2d;
+      --cream: #f8f9fa;
+      --section-padding: 6rem;
+    }
+    
+    /* Critical: Ensure content is visible immediately */
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--navy-deep);
+      color: var(--cream);
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Tajawal', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    /* Ensure fonts are loaded */
+    .fonts-loaded body {
+      font-family: 'Tajawal', system-ui, sans-serif;
+    }
+    
+    .fonts-loaded .font-serif {
+      font-family: 'Playfair Display', 'Amiri', serif;
+    }
+    
+    /* Critical: Root container styling */
+    #root {
+      min-height: 100vh;
+      isolation: isolate;
+    }
+    
+    /* Loading state */
+    .app-loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: var(--navy-deep);
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(197, 160, 89, 0.1);
+      border-top-color: var(--gold-polished);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Prevent layout shift */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* Improve tap targets on mobile */
+    button, 
+    a, 
+    input, 
+    select, 
+    textarea {
+      touch-action: manipulation;
+    }
+    
+    /* Remove user-scalable=no to improve accessibility */
+    @media (max-width: 768px) {
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+    }
+  </style>
+  
+  <!-- Deferred CSS -->
+  <style id="deferred-styles">
+    /* Non-critical styles */
+    .font-serif {
+      font-family: 'Playfair Display', 'Amiri', serif;
+    }
+    
+    .luxury-container {
+      max-width: 1440px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+      .luxury-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+    }
+
+    .text-gold-polished {
+      background: linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .luxury-widget {
+      background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%);
+      color: #050b18;
+      padding: 1rem 2rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      border-radius: 2px;
+      box-shadow: 0 10px 20px -5px rgba(197, 160, 89, 0.4);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+    }
+    
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 25px -5px rgba(197, 160, 89, 0.6);
+    }
+
+    /* Responsive Table pattern for mobile */
+    @media (max-width: 768px) {
+      .responsive-table thead { display: none; }
+      .responsive-table tr { 
+        display: block; 
+        margin-bottom: 1rem; 
+        border: 1px solid rgba(197, 160, 89, 0.1) !important;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 4px;
+      }
+      .responsive-table td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 1rem !important; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03); 
+        text-align: left;
+      }
+      .responsive-table td::before { 
+        content: attr(data-label); 
+        font-weight: 900; 
+        text-transform: uppercase; 
+        font-size: 10px; 
+        color: var(--gold-polished);
+        letter-spacing: 0.1em;
+      }
+      .responsive-table td:last-child { border-bottom: none; }
+    }
+
+    /* Skeleton Animation */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite linear;
+    }
+
+    /* Animations */
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in-up {
+      animation: fade-in-up 0.4s ease-out forwards;
+    }
+    
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.3s; }
+    .stagger-3 { animation-delay: 0.5s; }
+    
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px rgba(197, 160, 89, 0.5); }
+      50% { text-shadow: 0 0 20px rgba(197, 160, 89, 0.8), 0 0 30px rgba(197, 160, 89, 0.6); }
+      100% { text-shadow: 0 0 5px rgba(197, 160, 89, 0.5); }
+    }
+    
+    .animate-glow {
+      animation: glow 3s ease-in-out infinite;
+    }
+    
+    @keyframes hover-float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .animate-hover-float {
+      animation: hover-float 3s ease-in-out infinite;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--navy-deep); }
+    ::-webkit-scrollbar-thumb { 
+      background: var(--gold-polished); 
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover { 
+      background: var(--gold-light); 
+    }
+
+    /* Form elements */
+    input, select, textarea {
+      background: rgba(0,0,0,0.3) !important;
+      border: 1px solid rgba(255,255,255,0.05) !important;
+      border-radius: 4px !important;
+      padding: 0.75rem !important;
+      color: inherit !important;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--gold-polished) !important;
+      outline-offset: 2px !important;
+    }
+  </style>
+  
+  <!-- Import map for ES modules -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+      "react/": "https://esm.sh/react@^19.2.3/",
+      "react": "https://esm.sh/react@^19.2.3",
+      "recharts": "https://esm.sh/recharts@^3.6.0",
+      "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+      "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.88.0"
+    }
+  }
+  </script>
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Quality Time DZ",
+    "description": "متجر ساعات فاخرة جزائري - ساعات بتصميم أصيل وجودة عالمية بأسعار اقتصادية",
+    "url": "https://qualitytime-dz.com",
+    "logo": "https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png",
+    "image": "https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "DZ",
+      "addressRegion": "Algeria"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "addressCountry": "DZ"
+    },
+    "telephone": "+213-XXXXXXXXX",
+    "priceRange": "$$",
+    "sameAs": [
+      "https://www.tiktok.com/@equality_time"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "ساعات فاخرة",
+      "itemListElement": [
+        {
+          "@type": "Product",
+          "name": "ساعات رجالية فاخرة",
+          "category": "ساعات"
+        },
+        {
+          "@type": "Product", 
+          "name": "ساعات نسائية فاخرة",
+          "category": "ساعات"
+        }
+      ]
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <!-- Loading fallback -->
+  <div id="loading-fallback" class="app-loading">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Main app container -->
+  <div id="root" aria-live="polite" aria-busy="true"></div>
+  
+  <!-- Load non-critical styles after page load -->
+  <script>
+    // Load deferred styles
+    window.addEventListener('load', function() {
+      const deferredStyles = document.getElementById('deferred-styles');
+      if (deferredStyles) {
+        const css = deferredStyles.textContent;
+        const style = document.createElement('style');
+        style.textContent = css;
+        document.head.appendChild(style);
+        deferredStyles.remove();
+      }
+      
+      // Add fonts-loaded class
+      document.documentElement.classList.add('fonts-loaded');
+      
+      // Hide loading fallback
+      const fallback = document.getElementById('loading-fallback');
+      if (fallback) {
+        fallback.style.display = 'none';
+      }
+    });
+    
+    // Progressive enhancement: if JavaScript fails, show content
+    document.documentElement.classList.add('js-enabled');
+  </script>
+  
+  <!-- Main application script -->
+  <script type="module" src="/index.tsx" async></script>
+  
+  <!-- Performance monitoring (optional) -->
+  <script>
+    // Performance monitoring
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const timing = performance.timing;
+        const loadTime = timing.loadEventEnd - timing.navigationStart;
+        console.log('Page load time: ' + loadTime + 'ms');
+        
+        // Send to analytics if needed
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'timing_complete', {
+            'name': 'load',
+            'value': loadTime,
+            'event_category': 'Load Time'
+          });
+        }
+      }, 0);
+    });
+  </script>
+</body>
+</html>

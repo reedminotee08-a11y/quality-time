@@ -1,0 +1,7 @@
+{
+  "name": "Quality Time - Luxury Watch Boutique",
+  "description": "A high-end luxury watch store featuring an elegant gold-themed interface, full product management, and a comprehensive admin dashboard for order processing.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
