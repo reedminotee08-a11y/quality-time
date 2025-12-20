@@ -1,0 +1,49 @@
+# Robots.txt for Quality Time DZ - Luxury Watch Store
+# Generated on: 2025-12-20
+
+User-agent: *
+Allow: /
+
+# Prioritize important pages
+Crawl-delay: 1
+
+# Disallow admin and private areas
+Disallow: /#/
+Disallow: /*/admin/
+Disallow: /admin/
+Disallow: /*/login
+Disallow: /*/dashboard
+Disallow: /*/orders
+Disallow: /*/products
+
+# Allow specific public routes with hash fragments
+Allow: /#/
+Allow: /#/products
+Allow: /#/cart
+Allow: /#/checkout
+
+# Sitemap location
+Sitemap: https://qualitytime-dz.com/sitemap.xml
+
+# Special instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

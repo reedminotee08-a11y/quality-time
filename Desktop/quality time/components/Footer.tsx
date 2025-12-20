@@ -11,9 +11,6 @@ const Footer: React.FC = () => {
           
           {/* الشعار - Logo Section */}
           <div className="flex flex-col items-center gap-4 group cursor-default">
-            <div className="w-12 h-12 flex items-center justify-center border border-[#c5a059]/40 rounded-full transition-colors duration-500 group-hover:border-[#c5a059]">
-              <span className="text-sm font-black text-[#c5a059]">QT</span>
-            </div>
             <span className="text-2xl font-serif font-bold tracking-[0.2em] text-white">
               QUALITY <span className="text-[#c5a059]">TIME</span>
             </span>

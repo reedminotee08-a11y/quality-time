@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
 import { 
   Package, 
   LayoutDashboard, 
@@ -21,12 +20,11 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Button from '../components/Button';
-import { Product } from '../types';
-import { useToast } from '../App';
 import ModernProductForm from '../components/ModernProductForm';
+import ProductService from '../services/ProductService';
+import { Product } from '../types';
 
-const AdminProducts: React.FC = () => {
-  const { showToast } = useToast();
+const NewAdminProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +36,7 @@ const AdminProducts: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
+  // الفئات المتاحة
   const categories = [
     'الكل',
     'ساعات رجالية',
@@ -58,16 +57,10 @@ const AdminProducts: React.FC = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProducts(data || []);
-    } catch (error: any) {
+      const fetchedProducts = await ProductService.getAllProducts();
+      setProducts(fetchedProducts);
+    } catch (error) {
       console.error('Error fetching products:', error);
-      showToast('خطأ في تحميل المنتجات: ' + error.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -76,6 +69,7 @@ const AdminProducts: React.FC = () => {
   const applyFilters = () => {
     let filtered = [...products];
 
+    // فلترة البحث
     if (searchTerm.trim()) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,6 +78,7 @@ const AdminProducts: React.FC = () => {
       );
     }
 
+    // فلترة الفئة
     if (selectedCategory && selectedCategory !== 'الكل') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
@@ -93,19 +88,11 @@ const AdminProducts: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
-      showToast('تم حذف المنتج بنجاح', 'info');
-      fetchProducts();
+      await ProductService.deleteProduct(id);
+      setProducts(prev => prev.filter(p => p.id !== id));
       setShowDeleteConfirm(null);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting product:', error);
-      showToast('خطأ في حذف المنتج: ' + error.message, 'error');
     }
   };
 
@@ -121,7 +108,6 @@ const AdminProducts: React.FC = () => {
 
   const handleProductSaved = () => {
     fetchProducts();
-    setIsModalOpen(false);
   };
 
   const exportProducts = async () => {
@@ -146,11 +132,8 @@ const AdminProducts: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      showToast('تم تصدير البيانات بنجاح', 'success');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error exporting products:', error);
-      showToast('خطأ في تصدير البيانات: ' + error.message, 'error');
     }
   };
 
@@ -160,17 +143,12 @@ const AdminProducts: React.FC = () => {
     return { text: 'متوفر', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/10' };
   };
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      window.location.href = '/login';
-    } catch (error) {
-      showToast('خطأ في تسجيل الخروج', 'error');
-    }
+  const handleLogout = () => {
+    window.location.href = '/admin/login';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#050b18] to-[#0a1128] text-white flex flex-col md:flex-row">
+    <div className="dark-theme min-h-screen bg-gradient-to-b from-[#050b18] to-[#0a1128] text-white flex flex-col md:flex-row">
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
@@ -351,117 +329,115 @@ const AdminProducts: React.FC = () => {
         </header>
 
         {/* Products Display */}
-        <div className="bg-[#0a1128]/50 border border-white/10 rounded-xl overflow-hidden">
-          {loading ? (
-            <div className="text-center py-20">
-              <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-              <h3 className="text-lg font-bold text-white mb-2">جاري تحميل المنتجات</h3>
-              <p className="text-gray-400">يرجى الانتظار...</p>
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+            <h3 className="text-lg font-bold text-white mb-2">جاري تحميل المنتجات</h3>
+            <p className="text-gray-400">يرجى الانتظار...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package size={48} className="text-gray-500" />
             </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Package size={48} className="text-gray-500" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">لا توجد منتجات</h3>
-              <p className="text-gray-400 mb-8">لا توجد منتجات حالياً</p>
-              <Button variant="primary" onClick={openAddModal}>
-                <PlusCircle size={18} className="ml-2" />
-                إضافة أول منتج
-              </Button>
-            </div>
-          ) : viewMode === 'grid' ? (
-            <div className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map(product => {
-                  const stockStatus = getStockStatus(product.stock_quantity);
-                  return (
-                    <div key={product.id} className="group bg-[#0a1128]/50 border border-white/10 rounded-xl overflow-hidden hover:border-gold/30 transition-all duration-300">
-                      <div className="relative">
-                        <div className="aspect-square overflow-hidden bg-black/20">
-                          <img 
-                            src={product.images[0]} 
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="absolute top-4 left-4">
-                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${stockStatus.color}`}>
-                            {stockStatus.text}
-                          </div>
-                        </div>
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="secondary"
-                              size="icon"
-                              onClick={() => openEditModal(product)}
-                            >
-                              <Edit2 size={16} />
-                            </Button>
-                            <Button
-                              variant="danger"
-                              size="icon"
-                              onClick={() => setShowDeleteConfirm(product.id)}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="p-6">
-                        <div className="mb-3">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wider">{product.brand}</span>
-                          <h3 className="text-lg font-bold text-white mt-1 line-clamp-1">{product.name}</h3>
-                          {product.category && (
-                            <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-white/5 rounded text-xs text-gray-400">
-                              <Filter size={10} />
-                              {product.category}
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-2xl font-bold text-gold">
-                              {Number(product.price).toLocaleString()} دج
-                            </div>
-                            {product.old_price > 0 && (
-                              <div className="text-sm text-gray-500 line-through">
-                                {Number(product.old_price).toLocaleString()} دج
-                              </div>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            {product.stock_quantity} قطع
-                          </div>
-                        </div>
-                        
-                        <div className="mt-6 pt-4 border-t border-white/5 flex justify-between">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowDeleteConfirm(product.id)}
-                            className="text-red-400 hover:text-red-300"
-                          >
-                            حذف
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => openEditModal(product)}
-                          >
-                            تعديل
-                          </Button>
-                        </div>
+            <h3 className="text-xl font-bold text-white mb-2">لا توجد منتجات</h3>
+            <p className="text-gray-400 mb-8">لا توجد منتجات حالياً</p>
+            <Button variant="primary" onClick={openAddModal}>
+              <PlusCircle size={18} className="ml-2" />
+              إضافة أول منتج
+            </Button>
+          </div>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map(product => {
+              const stockStatus = getStockStatus(product.stock_quantity);
+              return (
+                <div key={product.id} className="group bg-[#0a1128]/50 border border-white/10 rounded-xl overflow-hidden hover:border-gold/30 transition-all duration-300">
+                  <div className="relative">
+                    <div className="aspect-square overflow-hidden bg-black/20">
+                      <img 
+                        src={product.images[0]} 
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="absolute top-4 left-4">
+                      <div className={`px-3 py-1 rounded-full text-xs font-bold ${stockStatus.color}`}>
+                        {stockStatus.text}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={() => openEditModal(product)}
+                        >
+                          <Edit2 size={16} />
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="icon"
+                          onClick={() => setShowDeleteConfirm(product.id)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="mb-3">
+                      <span className="text-[10px] text-gray-500 uppercase tracking-wider">{product.brand}</span>
+                      <h3 className="text-lg font-bold text-white mt-1 line-clamp-1">{product.name}</h3>
+                      {product.category && (
+                        <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-white/5 rounded text-xs text-gray-400">
+                          <Filter size={10} />
+                          {product.category}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-gold">
+                          {Number(product.price).toLocaleString()} دج
+                        </div>
+                        {product.old_price > 0 && (
+                          <div className="text-sm text-gray-500 line-through">
+                            {Number(product.old_price).toLocaleString()} دج
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {product.stock_quantity} قطع
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 pt-4 border-t border-white/5 flex justify-between">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowDeleteConfirm(product.id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        حذف
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => openEditModal(product)}
+                      >
+                        تعديل
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-[#0a1128]/50 border border-white/10 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-right">
                 <thead className="bg-black/30 border-b border-white/10">
@@ -481,7 +457,7 @@ const AdminProducts: React.FC = () => {
                       <tr key={product.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-black/20 rounded-lg overflow-hidden">
+                            <div className="w-16 h-16 bg-black/30 rounded-lg border border-white/10 overflow-hidden">
                               <img 
                                 src={product.images[0]} 
                                 alt={product.name}
@@ -489,42 +465,58 @@ const AdminProducts: React.FC = () => {
                               />
                             </div>
                             <div>
-                              <div className="font-bold text-white">{product.name}</div>
+                              <div className="font-bold text-white mb-1">{product.name}</div>
                               <div className="text-sm text-gray-400">{product.brand}</div>
                             </div>
                           </div>
                         </td>
                         <td className="p-6">
-                          {product.category || '-'}
-                        </td>
-                        <td className="p-6">
-                          <div className="text-lg font-bold text-gold">
-                            {Number(product.price).toLocaleString()} دج
+                          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg text-sm">
+                            <Filter size={12} />
+                            {product.category || 'غير مصنف'}
                           </div>
                         </td>
                         <td className="p-6">
-                          <div className="text-sm text-gray-400">
-                            {product.stock_quantity} قطع
+                          <div className="font-bold text-gold text-lg">{Number(product.price).toLocaleString()} دج</div>
+                          {product.old_price > 0 && (
+                            <div className="text-sm text-gray-500 line-through">
+                              {Number(product.old_price).toLocaleString()} دج
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-6">
+                          <div className="text-lg font-bold">{product.stock_quantity}</div>
+                          <div className="text-xs text-gray-500">قطعة</div>
+                        </td>
+                        <td className="p-6">
+                          <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold ${stockStatus.color}`}>
+                            {stockStatus.text}
+                            {product.stock_quantity <= 5 && product.stock_quantity > 0 && (
+                              <AlertTriangle size={12} />
+                            )}
+                            {product.stock_quantity === 0 && (
+                              <X size={12} />
+                            )}
+                            {product.stock_quantity > 5 && (
+                              <CheckCircle size={12} />
+                            )}
                           </div>
                         </td>
                         <td className="p-6">
-                          {stockStatus.text}
-                        </td>
-                        <td className="p-6">
-                          <div className="flex gap-2">
+                          <div className="flex items-center gap-2">
                             <Button
                               variant="secondary"
-                              size="sm"
+                              size="icon"
                               onClick={() => openEditModal(product)}
                             >
-                              تعديل
+                              <Edit2 size={16} />
                             </Button>
                             <Button
                               variant="danger"
-                              size="sm"
+                              size="icon"
                               onClick={() => setShowDeleteConfirm(product.id)}
                             >
-                              حذف
+                              <Trash2 size={16} />
                             </Button>
                           </div>
                         </td>
@@ -534,8 +526,8 @@ const AdminProducts: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
@@ -582,4 +574,4 @@ const AdminProducts: React.FC = () => {
   );
 };
 
-export default AdminProducts;
+export default NewAdminProducts;

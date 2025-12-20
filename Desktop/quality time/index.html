@@ -17,7 +17,7 @@
   <meta property="og:url" content="https://qualitytime-dz.com">
   <meta property="og:title" content="Quality Time DZ | ساعات فاخرة جزائرية">
   <meta property="og:description" content="ساعات فاخرة بتصميم جزائري أصيل وجودة عالمية بأسعار اقتصادية. اكتشف مجموعتنا الفريدة من الساعات الرجالية والنسائية.">
-  <meta property="og:image" content="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg">
+  <meta property="og:image" content="https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="ar_AR">
@@ -27,19 +27,19 @@
   <meta property="twitter:url" content="https://qualitytime-dz.com">
   <meta property="twitter:title" content="Quality Time DZ | ساعات فاخرة جزائرية">
   <meta property="twitter:description" content="ساعات فاخرة بتصميم جزائري أصيل وجودة عالمية بأسعار اقتصادية.">
-  <meta property="twitter:image" content="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg">
+  <meta property="twitter:image" content="https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png">
   
   <title>Quality Time | ساعات فاخرة جزائرية</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" href="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png" />
-  <link rel="apple-touch-icon" href="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png" />
+  <link rel="icon" type="image/png" href="https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png" />
+  <link rel="apple-touch-icon" href="https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png" />
   
   <!-- Preconnect for critical origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://mayiosolklryjbxxfohi.supabase.co">
+  <link rel="preconnect" href="https://ranhfnjyqwuoiarosxrk.supabase.co">
   <link rel="preconnect" href="https://esm.sh">
   
   <!-- DNS prefetch for additional domains -->
@@ -51,8 +51,78 @@
   <!-- Fonts with fallback -->
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet" media="all">
   
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'navy-deep': '#050b18',
+            'navy-soft': '#0a1128',
+            'gold-polished': '#c5a059',
+            'gold-light': '#e2c58a',
+            'gold-dark': '#8e6d2d',
+            'cream': '#f8f9fa',
+          },
+          fontFamily: {
+            'tajawal': ['Tajawal', 'system-ui', 'sans-serif'],
+            'amiri': ['Amiri', 'serif'],
+            'playfair': ['Playfair Display', 'serif'],
+          },
+          animation: {
+            'fade-in-up': 'fade-in-up 0.4s ease-out forwards',
+            'glow': 'glow 3s ease-in-out infinite',
+            'hover-float': 'hover-float 3s ease-in-out infinite',
+            'shimmer': 'shimmer 1.5s infinite linear',
+            'spin-slow': 'spin 3s linear infinite',
+          },
+          keyframes: {
+            'fade-in-up': {
+              'from': { opacity: '0', transform: 'translateY(20px)' },
+              'to': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'glow': {
+              '0%, 100%': { textShadow: '0 0 5px rgba(197, 160, 89, 0.5)' },
+              '50%': { textShadow: '0 0 20px rgba(197, 160, 89, 0.8), 0 0 30px rgba(197, 160, 89, 0.6)' },
+            },
+            'hover-float': {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            'shimmer': {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            }
+          },
+          backgroundImage: {
+            'gradient-gold': 'linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%)',
+            'gradient-gold-text': 'linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%)',
+            'gradient-luxury': 'linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+          },
+          backdropBlur: {
+            'xs': '2px',
+          },
+          boxShadow: {
+            'gold': '0 10px 20px -5px rgba(197, 160, 89, 0.4)',
+            'gold-hover': '0 15px 25px -5px rgba(197, 160, 89, 0.6)',
+          }
+        }
+      },
+      corePlugins: {
+        container: false,
+      }
+    }
+  </script>
+  
   <!-- Custom Animations CSS -->
   <link rel="stylesheet" href="/styles/animations.css">
+  
+  <!-- Forms CSS - Fix input text colors -->
+  <link rel="stylesheet" href="/styles/forms.css">
   
   
   <!-- Critical CSS -->
@@ -77,10 +147,9 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: var(--navy-deep);
       color: var(--cream);
       overflow-x: hidden;
-      font-family: system-ui, -apple-system, 'Segoe UI', 'Tajawal', sans-serif;
+      font-family: 'Tajawal', system-ui, sans-serif;
       line-height: 1.6;
       min-height: 100vh;
     }
@@ -144,31 +213,9 @@
         font-size: 16px !important;
       }
     }
-  </style>
-  
-  <!-- Deferred CSS -->
-  <style id="deferred-styles">
-    /* Non-critical styles */
-    .font-serif {
-      font-family: 'Playfair Display', 'Amiri', serif;
-    }
-    
-    .luxury-container {
-      max-width: 1440px;
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-    
-    @media (min-width: 768px) {
-      .luxury-container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-      }
-    }
 
-    .text-gold-polished {
+    /* Custom utility classes for text gradient */
+    .text-gradient-gold {
       background: linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%);
       -webkit-background-clip: text;
       background-clip: text;
@@ -176,108 +223,11 @@
       color: transparent;
     }
 
+    /* Luxury widget styling */
     .luxury-widget {
       background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, #8e6d2d 0%, #c5a059 50%, #e2c58a 100%);
-      color: #050b18;
-      padding: 1rem 2rem;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      border-radius: 2px;
-      box-shadow: 0 10px 20px -5px rgba(197, 160, 89, 0.4);
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      border: none;
-      cursor: pointer;
-      text-transform: uppercase;
-      font-size: 0.875rem;
-    }
-    
-    .btn-gold:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 25px -5px rgba(197, 160, 89, 0.6);
-    }
-
-    /* Responsive Table pattern for mobile */
-    @media (max-width: 768px) {
-      .responsive-table thead { display: none; }
-      .responsive-table tr { 
-        display: block; 
-        margin-bottom: 1rem; 
-        border: 1px solid rgba(197, 160, 89, 0.1) !important;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 4px;
-      }
-      .responsive-table td { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        padding: 1rem !important; 
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03); 
-        text-align: left;
-      }
-      .responsive-table td::before { 
-        content: attr(data-label); 
-        font-weight: 900; 
-        text-transform: uppercase; 
-        font-size: 10px; 
-        color: var(--gold-polished);
-        letter-spacing: 0.1em;
-      }
-      .responsive-table td:last-child { border-bottom: none; }
-    }
-
-    /* Skeleton Animation */
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    
-    .skeleton {
-      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite linear;
-    }
-
-    /* Animations */
-    @keyframes fade-in-up {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .animate-fade-in-up {
-      animation: fade-in-up 0.4s ease-out forwards;
-    }
-    
-    .stagger-1 { animation-delay: 0.1s; }
-    .stagger-2 { animation-delay: 0.3s; }
-    .stagger-3 { animation-delay: 0.5s; }
-    
-    @keyframes glow {
-      0% { text-shadow: 0 0 5px rgba(197, 160, 89, 0.5); }
-      50% { text-shadow: 0 0 20px rgba(197, 160, 89, 0.8), 0 0 30px rgba(197, 160, 89, 0.6); }
-      100% { text-shadow: 0 0 5px rgba(197, 160, 89, 0.5); }
-    }
-    
-    .animate-glow {
-      animation: glow 3s ease-in-out infinite;
-    }
-    
-    @keyframes hover-float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .animate-hover-float {
-      animation: hover-float 3s ease-in-out infinite;
     }
 
     /* Custom scrollbar */
@@ -291,18 +241,34 @@
       background: var(--gold-light); 
     }
 
-    /* Form elements */
-    input, select, textarea {
-      background: rgba(0,0,0,0.3) !important;
-      border: 1px solid rgba(255,255,255,0.05) !important;
-      border-radius: 4px !important;
-      padding: 0.75rem !important;
-      color: inherit !important;
+    /* Fix input text visibility in checkout page */
+    input[type="text"],
+    input[type="email"], 
+    input[type="tel"],
+    textarea,
+    select {
+      color: #1f2937 !important;
+      background-color: #ffffff !important;
     }
-    
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid var(--gold-polished) !important;
-      outline-offset: 2px !important;
+
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="tel"]::placeholder,
+    textarea::placeholder {
+      color: #6b7280 !important;
+    }
+
+    /* Ensure checkout page inputs are visible */
+    .bg-white input,
+    .bg-white textarea,
+    .bg-white select {
+      color: #1f2937 !important;
+      background-color: #ffffff !important;
+    }
+
+    .bg-white input::placeholder,
+    .bg-white textarea::placeholder {
+      color: #9ca3af !important;
     }
   </style>
   
@@ -329,8 +295,8 @@
     "name": "Quality Time DZ",
     "description": "متجر ساعات فاخرة جزائري - ساعات بتصميم أصيل وجودة عالمية بأسعار اقتصادية",
     "url": "https://qualitytime-dz.com",
-    "logo": "https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png",
-    "image": "https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/Black%20Color%20.jpg",
+    "logo": "https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png",
+    "image": "https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png",
     "address": {
       "@type": "PostalAddress",
       "addressCountry": "DZ",
@@ -365,7 +331,7 @@
   </script>
 </head>
 
-<body>
+<body class="bg-navy-deep text-cream font-tajawal">
   <!-- Loading fallback -->
   <div id="loading-fallback" class="app-loading">
     <div class="loading-spinner"></div>
@@ -378,15 +344,6 @@
   <script>
     // Load deferred styles
     window.addEventListener('load', function() {
-      const deferredStyles = document.getElementById('deferred-styles');
-      if (deferredStyles) {
-        const css = deferredStyles.textContent;
-        const style = document.createElement('style');
-        style.textContent = css;
-        document.head.appendChild(style);
-        deferredStyles.remove();
-      }
-      
       // Add fonts-loaded class
       document.documentElement.classList.add('fonts-loaded');
       

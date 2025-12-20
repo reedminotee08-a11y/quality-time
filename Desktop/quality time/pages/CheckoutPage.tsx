@@ -41,7 +41,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ cart, clearCart }) => {
     payment_method: 'Cash on Delivery'
   });
 
-  const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
+  const cartTotal = useMemo(() => (cart || []).reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
   const shippingCost = formData.delivery_method === 'HOME' ? SHIPPING_COSTS.HOME : SHIPPING_COSTS.OFFICE;
   const grandTotal = cartTotal + shippingCost;
 
@@ -52,7 +52,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ cart, clearCart }) => {
     const generatedId = `QT-${Math.floor(Math.random() * 900000) + 100000}`;
     
     const orderData = {
-      id: generatedId,
       customer_name: formData.name,
       email: formData.email || null, // Optional email
       phone: formData.phone,
@@ -60,25 +59,31 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ cart, clearCart }) => {
       municipality: formData.municipality,
       shipping_address: formData.address,
       delivery_method: formData.delivery_method === 'HOME' ? 'توصيل للمنزل' : 'توصيل للمكتب',
+      subtotal: cartTotal,
+      shipping_cost: shippingCost,
       total: grandTotal,
-      items: cart.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.images[0]
-      })),
       status: 'PENDING',
       payment_method: formData.payment_method
     };
 
-    const { error } = await supabase.from('orders').insert([orderData]);
+    const { data, error } = await supabase.from('orders').insert([orderData]).select().single();
 
-    if (!error) {
+    if (!error && data) {
+      // Create order items
       for (const item of cart) {
-        await supabase.rpc('decrement_stock', { p_id: item.id, qty: item.quantity });
+        await supabase.from('order_items').insert([{
+          order_id: data.id,
+          product_id: item.id,
+          product_name: item.name,
+          product_brand: item.brand,
+          product_image: item.images[0],
+          unit_price: item.price,
+          quantity: item.quantity,
+          total_price: item.price * item.quantity
+        }]);
       }
-      setOrderId(generatedId);
+      
+      setOrderId(data.id);
       setSuccess(true);
       clearCart();
     } else {

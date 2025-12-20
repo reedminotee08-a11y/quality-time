@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { supabase } from './supabaseClient';
 import { CartItem, Product, UserSession } from './types';
 import { CheckCircle, AlertCircle, Info, Loader2 } from 'lucide-react';
@@ -123,8 +124,8 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Calculate cart metrics
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const cartCount = (cart || []).reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = (cart || []).reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   // Load initial data
   useEffect(() => {
@@ -267,96 +268,98 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <ToastContext.Provider value={{ showToast }}>
-        <CartContext.Provider value={{
-          cart,
-          addToCart,
-          removeFromCart,
-          updateQuantity,
-          clearCart,
-          cartCount,
-          cartTotal
-        }}>
-          <Router>
-            <div className="flex flex-col min-h-screen bg-[#050b18] text-white">
-              <ScrollToTop />
-              
-              <Navbar cartCount={cartCount} />
-              
-              <main className="flex-grow pt-20 md:pt-24 pb-8 md:pb-12">
-                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                  <ErrorBoundary>
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path="/" element={<HomePage />} />
-                      <Route 
-                        path="/products" 
-                        element={<ProductsPage addToCart={addToCart} />} 
-                      />
-                      <Route 
-                        path="/product/:id" 
-                        element={<ProductDetailsPage addToCart={addToCart} />} 
-                      />
-                      <Route 
-                        path="/cart" 
-                        element={<CartPage cart={cart} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />} 
-                      />
-                      <Route 
-                        path="/checkout" 
-                        element={<CheckoutPage cart={cart} clearCart={clearCart} />} 
-                      />
-                      
-                      {/* Admin Routes */}
-                      <Route 
-                        path="/admin/login" 
-                        element={session ? <Navigate to="/admin/dashboard" /> : <AdminLogin />} 
-                      />
-                      <Route 
-                        path="/admin/dashboard" 
-                        element={
-                          <ProtectedRoute>
-                            <AdminDashboard />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/admin/products" 
-                        element={
-                          <ProtectedRoute>
-                            <AdminProducts />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/admin/orders" 
-                        element={
-                          <ProtectedRoute>
-                            <AdminOrders />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      
-                      {/* Fallback Route */}
-                      <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                  </ErrorBoundary>
-                </div>
-              </main>
+      <HelmetProvider>
+        <Router>
+          <ToastContext.Provider value={{ showToast }}>
+            <CartContext.Provider value={{
+              cart,
+              addToCart,
+              removeFromCart,
+              updateQuantity,
+              clearCart,
+              cartCount,
+              cartTotal
+            }}>
+              <div className="flex flex-col min-h-screen bg-[#050b18] text-white">
+                <ScrollToTop />
+                
+                <Navbar cartCount={cartCount} />
+                
+                <main className="flex-grow pt-20 md:pt-24 pb-8 md:pb-12">
+                  <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                    <ErrorBoundary>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<HomePage />} />
+                        <Route 
+                          path="/products" 
+                          element={<ProductsPage addToCart={addToCart} />} 
+                        />
+                        <Route 
+                          path="/product/:id" 
+                          element={<ProductDetailsPage addToCart={addToCart} />} 
+                        />
+                        <Route 
+                          path="/cart" 
+                          element={<CartPage cart={cart} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />} 
+                        />
+                        <Route 
+                          path="/checkout" 
+                          element={<CheckoutPage cart={cart} clearCart={clearCart} />} 
+                        />
+                        
+                        {/* Admin Routes */}
+                        <Route 
+                          path="/admin/login" 
+                          element={session ? <Navigate to="/admin/dashboard" /> : <AdminLogin />} 
+                        />
+                        <Route 
+                          path="/admin/dashboard" 
+                          element={
+                            <ProtectedRoute>
+                              <AdminDashboard />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/admin/products" 
+                          element={
+                            <ProtectedRoute>
+                              <AdminProducts />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/admin/orders" 
+                          element={
+                            <ProtectedRoute>
+                              <AdminOrders />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        
+                        {/* Fallback Route */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                    </ErrorBoundary>
+                  </div>
+                </main>
 
-              <Footer />
-              
-              {/* Toast Notifications */}
-              {toast && (
-                <ToastNotification
-                  message={toast.message}
-                  type={toast.type}
-                  onClose={hideToast}
-                />
-              )}
-            </div>
-          </Router>
-        </CartContext.Provider>
-      </ToastContext.Provider>
+                <Footer />
+                
+                {/* Toast Notifications */}
+                {toast && (
+                  <ToastNotification
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={hideToast}
+                  />
+                )}
+              </div>
+            </CartContext.Provider>
+          </ToastContext.Provider>
+        </Router>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };

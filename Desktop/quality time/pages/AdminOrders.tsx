@@ -222,7 +222,7 @@ const AdminOrders: React.FC = () => {
       // إضافة تأخير قبل الطباعة للسماح بتحميل الصور
       setTimeout(() => {
         printWindow.print();
-        printWindow.close();
+        // عدم إغلاق النافذة تلقائياً - تبقى مفتوحة للمستخدم
         setPrintLoading(false);
       }, 500);
     }, 100);
@@ -605,7 +605,7 @@ const AdminOrders: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${order.items.map((item, index) => `
+                  ${(order.items || []).map((item, index) => `
                     <tr>
                       <td>
                         ${item.image ? `
@@ -640,7 +640,7 @@ const AdminOrders: React.FC = () => {
             <div class="total-section">
               <div class="total-row">
                 <span>عدد المنتجات:</span>
-                <span>${order.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0)}</span>
+                <span>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity || 0), 0)}</span>
               </div>
               
               ${order.shipping_cost ? `
@@ -738,18 +738,18 @@ const AdminOrders: React.FC = () => {
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[55] md:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/80 z-[55] md:hidden animate-in fade-in duration-200"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed md:sticky top-0 right-0 h-screen w-64 bg-[#0a1128]/95 backdrop-blur-xl border-l border-white/10 flex flex-col z-[58] shadow-2xl transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed md:sticky top-0 right-0 h-screen w-64 bg-[#0a1128]/95 border-l border-white/10 flex flex-col z-[58] shadow-2xl transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
         <div className="p-8 border-b border-white/10">
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img 
-                src="https://mayiosolklryjbxxfohi.supabase.co/storage/v1/object/public/logo/logo.png" 
+                src="https://ranhfnjyqwuoiarosxrk.supabase.co/storage/v1/object/public/logo/unnamed2%20(1).png" 
                 alt="Logo" 
                 className="w-16 h-16 filter brightness-110"
               />
@@ -880,17 +880,25 @@ const AdminOrders: React.FC = () => {
         </header>
 
         {/* Orders Table */}
-        <div className="bg-[#0a1128]/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
+        <div className="bg-[#0a1128]/50 border border-white/10 rounded-xl overflow-hidden">
+          <div className="p-6 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">جميع الطلبات</h2>
+              <div className="text-sm text-gray-400">
+                {filteredOrders.length} طلب
+              </div>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead className="bg-black/30 border-b border-white/10">
                 <tr>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">الطلب</th>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">العميل</th>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">التاريخ</th>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">المبلغ</th>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">الحالة</th>
-                  <th className="p-6 font-bold text-gray-400 text-sm uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">الطلب</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">العميل</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">التاريخ</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">المبلغ</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">الحالة</th>
+                  <th className="px-6 py-4 font-bold text-gray-400 text-sm uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -900,13 +908,13 @@ const AdminOrders: React.FC = () => {
                     className="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer"
                     onClick={() => setSelectedOrder(order)}
                   >
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       <div className="font-mono text-sm text-gold font-bold">#{order.id}</div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {order.items.length} منتج
+                        {order.items?.length || 0} منتج
                       </div>
                     </td>
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-transparent rounded-lg flex items-center justify-center">
                           <User size={18} className="text-gold" />
@@ -922,7 +930,7 @@ const AdminOrders: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       <div className="text-sm text-white">
                         {new Date(order.created_at).toLocaleDateString('ar-DZ')}
                       </div>
@@ -930,7 +938,7 @@ const AdminOrders: React.FC = () => {
                         {new Date(order.created_at).toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </td>
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       <div className="text-lg font-bold text-gold">
                         {Number(order.total).toLocaleString()} دج
                       </div>
@@ -938,10 +946,10 @@ const AdminOrders: React.FC = () => {
                         شامل الشحن
                       </div>
                     </td>
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       {getStatusBadge(order.status)}
                     </td>
-                    <td className="p-6">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Button
                           variant="secondary"
@@ -1006,7 +1014,7 @@ const AdminOrders: React.FC = () => {
 
         {/* Order Details Modal */}
         {selectedOrder && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
             <div className="bg-[#0a1128] border border-white/10 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-[#0a1128] border-b border-white/10 p-6 flex items-center justify-between z-10">
                 <div className="flex items-center gap-4">
@@ -1137,12 +1145,12 @@ const AdminOrders: React.FC = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h4 className="text-lg font-bold">المنتجات المطلوبة</h4>
                     <div className="text-sm text-gray-400">
-                      {selectedOrder.items.length} منتج
+                      {selectedOrder.items?.length || 0} منتج
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    {selectedOrder.items.map((item, index) => (
+                    {(selectedOrder.items || []).map((item, index) => (
                       <div key={index} className="luxury-widget p-6 rounded-xl">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
@@ -1191,7 +1199,7 @@ const AdminOrders: React.FC = () => {
                     <div className="flex justify-between items-center py-3 border-b border-white/5">
                       <span className="text-gray-400">إجمالي المنتجات</span>
                       <span className="font-medium text-white">
-                        {selectedOrder.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0)} منتج
+                        {(selectedOrder.items || []).reduce((sum, item) => sum + Number(item.quantity || 0), 0)} منتج
                       </span>
                     </div>
                     
@@ -1274,7 +1282,7 @@ const AdminOrders: React.FC = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80">
             <div className="bg-[#0a1128] border border-white/10 rounded-xl p-8 max-w-md w-full animate-scale-in">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">

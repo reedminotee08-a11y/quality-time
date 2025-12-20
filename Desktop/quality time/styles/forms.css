@@ -1,0 +1,108 @@
+/* Form Input Styles - Fix for white text on light backgrounds */
+
+/* Base input styles */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+textarea,
+select {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Placeholder text */
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+/* Dark theme inputs (for admin dashboard) */
+.dark-theme input[type="text"],
+.dark-theme input[type="number"],
+.dark-theme input[type="email"],
+.dark-theme input[type="tel"],
+.dark-theme input[type="password"],
+.dark-theme textarea,
+.dark-theme select {
+  color: #ffffff !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme input[type="text"]:focus,
+.dark-theme input[type="number"]:focus,
+.dark-theme input[type="email"]:focus,
+.dark-theme input[type="tel"]:focus,
+.dark-theme input[type="password"]:focus,
+.dark-theme textarea:focus,
+.dark-theme select:focus {
+  color: #ffffff !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1) !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Form labels */
+label {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+.dark-theme label {
+  color: #f3f4f6 !important;
+}
+
+/* Error messages */
+.text-red-500 {
+  color: #ef4444 !important;
+}
+
+/* Success messages */
+.text-green-500 {
+  color: #10b981 !important;
+}
+
+/* Override specific Tailwind classes that might be causing issues */
+.bg-white {
+  background-color: #ffffff !important;
+}
+
+.text-gray-900 {
+  color: #111827 !important;
+}
+
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.border-gray-300 {
+  border-color: #d1d5db !important;
+}
+
+.focus\:ring-blue-500:focus,
+.focus\:border-blue-500:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
